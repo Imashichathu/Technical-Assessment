@@ -138,6 +138,7 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 18px;
+  perspective: 900px;
 }
 
 .stat-card {
@@ -150,7 +151,40 @@ main {
   border: 1px solid var(--border);
   border-radius: 20px;
   background: linear-gradient(165deg, var(--surface-1), var(--surface-2));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 14px 30px -18px rgba(0, 0, 0, 0.6);
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
   animation: stat-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stat-card:hover {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 30px 50px -20px rgba(0, 0, 0, 0.7),
+    0 0 40px -12px var(--stat-accent);
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(255, 255, 255, 0.16),
+    transparent 55%
+  );
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.stat-card:hover::after {
+  opacity: 1;
 }
 
 @keyframes stat-in {
@@ -173,14 +207,25 @@ main {
 }
 
 .stat-icon {
+  position: relative;
+  z-index: 1;
   width: 42px;
   height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  color: var(--stat-accent);
-  background: var(--stat-accent-bg);
+  color: #fff;
+  background: linear-gradient(150deg, var(--stat-accent), var(--stat-accent-dark, var(--stat-accent)));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 -2px 4px rgba(0, 0, 0, 0.25) inset,
+    0 8px 16px -6px var(--stat-accent);
+  transition: transform 0.15s ease;
+}
+
+.stat-card:hover .stat-icon {
+  transform: translateZ(20px) scale(1.05);
 }
 
 .stat-icon svg {
@@ -189,6 +234,8 @@ main {
 }
 
 .stat-value {
+  position: relative;
+  z-index: 1;
   font-size: 2rem;
   font-weight: 700;
   line-height: 1;
@@ -196,32 +243,39 @@ main {
 }
 
 .stat-label {
+  position: relative;
+  z-index: 1;
   font-size: 0.85rem;
   color: var(--text-muted);
 }
 
 .stat-card--periwinkle {
   --stat-accent: #aab0f9;
+  --stat-accent-dark: #6b73d6;
   --stat-accent-bg: rgba(170, 176, 249, 0.15);
 }
 
 .stat-card--violet {
   --stat-accent: #8b5cf6;
+  --stat-accent-dark: #5b3fd6;
   --stat-accent-bg: rgba(139, 92, 246, 0.15);
 }
 
 .stat-card--cyan {
   --stat-accent: #22d3ee;
+  --stat-accent-dark: #0891b2;
   --stat-accent-bg: rgba(34, 211, 238, 0.15);
 }
 
 .stat-card--success {
   --stat-accent: #34d399;
+  --stat-accent-dark: #059669;
   --stat-accent-bg: rgba(52, 211, 153, 0.15);
 }
 
 .stat-card--danger {
   --stat-accent: #ff6b81;
+  --stat-accent-dark: #e11d48;
   --stat-accent-bg: rgba(255, 107, 129, 0.15);
 }
 
