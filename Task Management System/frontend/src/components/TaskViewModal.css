@@ -1,0 +1,55 @@
+.task-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.task-view h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--text-h);
+}
+
+.task-view-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.task-view-description {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.task-view-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid rgba(170, 176, 249, 0.14);
+  border-radius: 14px;
+  background: rgba(2, 5, 20, 0.4);
+}
+
+.task-view-meta dt {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.task-view-meta dd {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-h);
+}
+
+.task-view-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
