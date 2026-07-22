@@ -4,6 +4,7 @@ import { TaskFormModal } from '../components/TaskFormModal'
 import { TaskTable } from '../components/TaskTable'
 import { TaskViewModal } from '../components/TaskViewModal'
 import { useAuth } from '../hooks/useAuth'
+import { useTheme } from '../hooks/useTheme'
 import { createTask, deleteTask, fetchTasks, updateTask } from '../lib/tasksApi'
 import type { Task, TaskInput } from '../types/task'
 import './Dashboard.css'
@@ -17,6 +18,7 @@ type ModalState =
 
 export function Dashboard() {
   const { user, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [tasks, setTasks] = useState<Task[]>([])
   const [isLoadingTasks, setIsLoadingTasks] = useState(true)
@@ -169,10 +171,37 @@ export function Dashboard() {
   ] as const
 
   return (
-    <div className="dashboard-page">
+    <div className={`dashboard-page theme-${theme}`}>
       <header className="dashboard-header">
         <h1>Task Manager</h1>
         <div className="dashboard-user">
+          <button
+            type="button"
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? (
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="4.5" stroke="currentColor" strokeWidth="1.8" />
+                <path
+                  d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )}
+          </button>
           <span className="avatar">{initials}</span>
           <span className="user-name">{user?.name}</span>
           <button

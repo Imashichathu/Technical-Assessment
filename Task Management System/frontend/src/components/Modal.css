@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(2, 4, 12, 0.65);
+  background: var(--overlay-bg);
   backdrop-filter: blur(6px);
   animation: modal-backdrop-in 0.2s ease both;
 }
@@ -29,7 +29,7 @@
   border: 1.5px solid transparent;
   border-radius: 24px;
   background:
-    linear-gradient(rgba(5, 7, 15, 0.97), rgba(5, 7, 15, 0.97)) padding-box,
+    linear-gradient(var(--modal-bg), var(--modal-bg)) padding-box,
     linear-gradient(135deg, #22d3ee, #8b5cf6) border-box;
   box-shadow:
     0 30px 90px -20px rgba(0, 0, 0, 0.9),
@@ -78,7 +78,7 @@
 
 .modal-close:hover {
   color: var(--text-h);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--accent-bg);
 }
 
 .modal-close svg {

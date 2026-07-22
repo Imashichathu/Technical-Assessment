@@ -2,7 +2,7 @@
   padding: 40px 20px;
   text-align: center;
   color: var(--text-muted);
-  border: 1px dashed rgba(170, 176, 249, 0.2);
+  border: 1px dashed var(--surface-border);
   border-radius: 18px;
 }
 
@@ -10,7 +10,7 @@
   overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: 18px;
-  background: linear-gradient(165deg, rgba(170, 176, 249, 0.04), rgba(2, 4, 18, 0.5));
+  background: linear-gradient(165deg, var(--surface-1), var(--surface-2));
 }
 
 .task-table {
@@ -31,7 +31,7 @@
 
 .task-table td {
   padding: 14px 18px;
-  border-bottom: 1px solid rgba(170, 176, 249, 0.08);
+  border-bottom: 1px solid var(--border);
   color: var(--text);
   font-size: 0.9rem;
 }
@@ -40,12 +40,12 @@
   border-bottom: none;
 }
 
-.task-table-title {
+.task-table td.task-table-title {
   color: var(--text-h);
   font-weight: 500;
 }
 
-.task-table-overdue {
+.task-table td.task-table-overdue {
   color: var(--danger);
   font-weight: 600;
 }
