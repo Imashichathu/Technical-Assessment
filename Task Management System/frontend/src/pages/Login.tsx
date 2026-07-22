@@ -4,6 +4,24 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import './Login.css'
 
+const PARTICLES = [
+  { top: '8%', left: '6%', size: 5, color: '#22d3ee', delay: '0s' },
+  { top: '14%', left: '22%', size: 3, color: '#8b5cf6', delay: '1.2s' },
+  { top: '28%', left: '4%', size: 4, color: '#ffffff', delay: '2.4s' },
+  { top: '6%', left: '70%', size: 4, color: '#22d3ee', delay: '0.6s' },
+  { top: '2%', left: '88%', size: 3, color: '#8b5cf6', delay: '1.8s' },
+  { top: '20%', left: '93%', size: 5, color: '#22d3ee', delay: '3s' },
+  { top: '55%', left: '2%', size: 3, color: '#8b5cf6', delay: '2s' },
+  { top: '70%', left: '10%', size: 4, color: '#ffffff', delay: '0.9s' },
+  { top: '85%', left: '20%', size: 3, color: '#22d3ee', delay: '2.7s' },
+  { top: '62%', left: '87%', size: 4, color: '#8b5cf6', delay: '1.5s' },
+  { top: '78%', left: '95%', size: 3, color: '#22d3ee', delay: '0.3s' },
+  { top: '40%', left: '97%', size: 3, color: '#8b5cf6', delay: '1s' },
+  { top: '46%', left: '1%', size: 3, color: '#22d3ee', delay: '2.9s' },
+] as const
+
+const COMET_PATH = 'M 1080 640 C 1220 700, 1300 760, 1440 750'
+
 export function Login() {
   const { user, login } = useAuth()
   const navigate = useNavigate()
@@ -40,10 +58,25 @@ export function Login() {
 
   return (
     <div className="login-page">
-      <div className="login-blob login-blob--a" />
-      <div className="login-blob login-blob--b" />
-      <div className="login-blob login-blob--c" />
-      <div className="login-blob login-blob--d" />
+      <div className="login-dotgrid login-dotgrid--tl" />
+      <div className="login-dotgrid login-dotgrid--br" />
+
+      {PARTICLES.map((p, i) => (
+        <span
+          key={i}
+          className="login-particle"
+          style={{
+            top: p.top,
+            left: p.left,
+            width: p.size,
+            height: p.size,
+            background: p.color,
+            boxShadow: `0 0 8px 2px ${p.color}`,
+            animationDelay: p.delay,
+          }}
+        />
+      ))}
+
       <div className="login-ring login-ring--a" />
       <div className="login-ring login-ring--b" />
       <div className="login-ring login-ring--c" />
@@ -55,20 +88,12 @@ export function Login() {
         aria-hidden="true"
       >
         <defs>
-          <linearGradient id="lineGradA" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#2e4dc3" />
-            <stop offset="100%" stopColor="#7c5cff" />
-          </linearGradient>
-          <linearGradient id="lineGradB" x1="1" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#22d3ee" />
-            <stop offset="100%" stopColor="#5b3fd6" />
-          </linearGradient>
-          <linearGradient id="lineGradC" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0%" stopColor="#0c2ca4" />
-            <stop offset="100%" stopColor="#22d3ee" />
+          <linearGradient id="goldFade" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#fbbf24" stopOpacity="0" />
+            <stop offset="100%" stopColor="#fbbf24" stopOpacity="0.9" />
           </linearGradient>
           <filter id="lineGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feGaussianBlur stdDeviation="5" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
@@ -77,8 +102,8 @@ export function Login() {
         </defs>
         <path
           className="login-line login-line--a"
-          d="M -80 180 C 120 60, 260 320, 460 260 C 660 200, 720 420, 940 380 C 1120 350, 1180 120, 1480 140"
-          stroke="url(#lineGradA)"
+          d="M -100 400 C 150 320, 260 480, 480 430 C 680 390, 640 260, 920 280 C 1080 292, 1140 220, 1300 240"
+          stroke="#22d3ee"
           strokeWidth="2.5"
           strokeLinecap="round"
           fill="none"
@@ -86,42 +111,58 @@ export function Login() {
         />
         <path
           className="login-line login-line--b"
-          d="M 1500 700 C 1260 780, 1180 560, 980 600 C 780 640, 720 460, 500 500 C 300 540, 220 740, -60 700"
-          stroke="url(#lineGradB)"
+          d="M 1540 200 C 1300 160, 1250 340, 1020 320 C 800 300, 780 480, 560 520 C 380 552, 300 700, 60 680"
+          stroke="#8b5cf6"
           strokeWidth="2.5"
           strokeLinecap="round"
           fill="none"
           filter="url(#lineGlow)"
         />
         <path
-          className="login-line login-line--c"
-          d="M -60 520 C 160 460, 220 620, 420 560 C 620 500, 660 340, 880 360"
-          stroke="url(#lineGradC)"
+          className="login-line login-line--gold"
+          d={COMET_PATH}
+          stroke="url(#goldFade)"
           strokeWidth="2"
           strokeLinecap="round"
           fill="none"
-          filter="url(#lineGlow)"
         />
+        <circle r="4" fill="#fbbf24" filter="url(#lineGlow)">
+          <animateMotion dur="7s" repeatCount="indefinite" path={COMET_PATH} />
+        </circle>
       </svg>
 
       <form className="login-card" onSubmit={handleSubmit} noValidate>
         <div className="login-brand">
-          <span className="login-logo">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M20 6.5 9.5 17 4 11.5"
-                stroke="currentColor"
-                strokeWidth="2.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </span>
-          <h1>Task Manager</h1>
+          <svg className="login-logo-hex" viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <linearGradient id="hexGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#22d3ee" />
+                <stop offset="100%" stopColor="#8b5cf6" />
+              </linearGradient>
+            </defs>
+            <polygon
+              points="92,50 71,86.37 29,86.37 8,50 29,13.63 71,13.63"
+              fill="rgba(5,7,15,0.6)"
+              stroke="url(#hexGrad)"
+              strokeWidth="4"
+            />
+            <path
+              d="M35 52 L45 62 L68 38"
+              stroke="#fff"
+              strokeWidth="6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </svg>
+          <h1>
+            <span className="brand-white">Task</span>{' '}
+            <span className="brand-grad">Manager</span>
+          </h1>
           <p className="subtitle">Sign in to manage your daily tasks</p>
         </div>
 
-        <div className="field">
+        <div className="field field--cyan">
           <span className="field-icon">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
@@ -150,7 +191,7 @@ export function Login() {
           <label htmlFor="email">Email address</label>
         </div>
 
-        <div className="field">
+        <div className="field field--violet">
           <span className="field-icon">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <rect
@@ -223,11 +264,28 @@ export function Login() {
               Signing in…
             </>
           ) : (
-            'Sign in'
+            <>
+              Sign in
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="submit-arrow">
+                <path
+                  d="M5 12h14M13 6l6 6-6 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </>
           )}
         </button>
 
-        <p className="hint">Demo credentials: admin@test.com / 123456</p>
+        <div className="login-divider">
+          <span>OR</span>
+        </div>
+
+        <p className="hint">
+          Demo credentials: <span className="hint-email">admin@test.com</span> / 123456
+        </p>
       </form>
     </div>
   )
