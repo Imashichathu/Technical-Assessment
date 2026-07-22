@@ -3,7 +3,7 @@ import { pool } from '../config/db.js'
 const PRIORITIES = ['Low', 'Medium', 'High']
 const STATUSES = ['Pending', 'In Progress', 'Completed']
 
-function validateTaskInput(body, { partial = false } = {}) {
+function validateTaskInput(body, { partial = false, enforceFutureDueDate = false } = {}) {
   const errors = []
 
   if (!partial || body.title !== undefined) {
@@ -15,19 +15,32 @@ function validateTaskInput(body, { partial = false } = {}) {
   }
 
   if (!partial || body.priority !== undefined) {
-    if (!PRIORITIES.includes(body.priority)) {
+    if (body.priority === undefined || body.priority === null || body.priority === '') {
+      errors.push('Priority is required')
+    } else if (!PRIORITIES.includes(body.priority)) {
       errors.push('Priority must be Low, Medium, or High')
     }
   }
 
-  if (!partial || body.dueDate !== undefined) {
-    if (!body.dueDate || Number.isNaN(Date.parse(body.dueDate))) {
-      errors.push('A valid due date is required')
+  if (body.status !== undefined) {
+    if (body.status === '') {
+      errors.push('Status is required')
+    } else if (!STATUSES.includes(body.status)) {
+      errors.push('Status must be Pending, In Progress, or Completed')
     }
   }
 
-  if (body.status !== undefined && !STATUSES.includes(body.status)) {
-    errors.push('Status must be Pending, In Progress, or Completed')
+  if (!partial || body.dueDate !== undefined) {
+    if (!body.dueDate) {
+      errors.push('Due date is required')
+    } else if (Number.isNaN(Date.parse(body.dueDate))) {
+      errors.push('Due date must be a valid date')
+    } else if (enforceFutureDueDate) {
+      const today = new Date().toISOString().slice(0, 10)
+      if (body.dueDate < today) {
+        errors.push('Due date cannot be earlier than today')
+      }
+    }
   }
 
   return errors
@@ -54,8 +67,23 @@ export async function listTasks(req, res) {
   res.json({ tasks: rows.map(serializeTask) })
 }
 
+export async function getTask(req, res) {
+  const { id } = req.params
+
+  const [rows] = await pool.query('SELECT * FROM tasks WHERE id = ? AND user_id = ?', [
+    id,
+    req.user.id,
+  ])
+
+  if (!rows[0]) {
+    return res.status(404).json({ message: 'Task not found' })
+  }
+
+  res.json({ task: serializeTask(rows[0]) })
+}
+
 export async function createTask(req, res) {
-  const errors = validateTaskInput(req.body)
+  const errors = validateTaskInput(req.body, { enforceFutureDueDate: true })
   if (errors.length) {
     return res.status(400).json({ message: errors[0], errors })
   }

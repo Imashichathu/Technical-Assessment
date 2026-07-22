@@ -183,6 +183,17 @@
   animation: card-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+@media (max-width: 480px) {
+  .login-page {
+    padding: 16px;
+  }
+
+  .login-card {
+    padding: 36px 24px;
+    border-radius: 24px;
+  }
+}
+
 @keyframes card-in {
   from {
     opacity: 0;
