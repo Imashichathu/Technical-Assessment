@@ -1,0 +1,88 @@
+.task-table-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  border: 1px dashed rgba(170, 176, 249, 0.2);
+  border-radius: 18px;
+}
+
+.task-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(165deg, rgba(170, 176, 249, 0.04), rgba(2, 4, 18, 0.5));
+}
+
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.task-table th {
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.task-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(170, 176, 249, 0.08);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.task-table tr:last-child td {
+  border-bottom: none;
+}
+
+.task-table-title {
+  color: var(--text-h);
+  font-weight: 500;
+}
+
+.task-table-overdue {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.task-table-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.task-table-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.task-table-actions button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.task-table-actions button:hover {
+  color: #22d3ee;
+  background: rgba(34, 211, 238, 0.12);
+}
+
+.task-table-actions .task-table-delete:hover {
+  color: var(--danger);
+  background: rgba(255, 107, 129, 0.12);
+}
