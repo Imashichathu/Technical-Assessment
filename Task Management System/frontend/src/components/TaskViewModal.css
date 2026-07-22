@@ -30,9 +30,9 @@
   gap: 14px;
   margin: 0;
   padding: 16px;
-  border: 1px solid rgba(170, 176, 249, 0.14);
+  border: 1px solid var(--surface-border);
   border-radius: 14px;
-  background: rgba(2, 5, 20, 0.4);
+  background: var(--surface-1);
 }
 
 .task-view-meta dt {

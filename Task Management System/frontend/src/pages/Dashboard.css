@@ -1,10 +1,11 @@
 .dashboard-page {
   min-height: 100vh;
   padding: 24px 32px;
+  color: var(--text);
   background:
     radial-gradient(circle at 15% 0%, rgba(139, 92, 246, 0.1) 0%, transparent 45%),
     radial-gradient(circle at 85% 100%, rgba(34, 211, 238, 0.08) 0%, transparent 45%),
-    #05060d;
+    var(--page-solid);
 }
 
 .dashboard-header {
@@ -14,7 +15,7 @@
   padding: 14px 20px;
   border: 1px solid var(--border);
   border-radius: 18px;
-  background: linear-gradient(180deg, rgba(170, 176, 249, 0.06), rgba(4, 22, 78, 0.35));
+  background: linear-gradient(180deg, var(--surface-1), var(--surface-2));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -49,6 +50,34 @@
 .user-name {
   color: var(--text-h);
   font-size: 0.9rem;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-h);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  transform: translateY(-1px) rotate(10deg);
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
 }
 
 .logout-btn {
@@ -113,7 +142,7 @@ main {
   padding: 22px 20px;
   border: 1px solid var(--border);
   border-radius: 20px;
-  background: linear-gradient(165deg, rgba(170, 176, 249, 0.05), rgba(2, 4, 18, 0.55));
+  background: linear-gradient(165deg, var(--surface-1), var(--surface-2));
   animation: stat-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -272,4 +301,88 @@ main {
 .badge-status--completed {
   color: #34d399;
   background: rgba(52, 211, 153, 0.15);
+}
+
+/* Light theme overrides — scoped to the dashboard so the login page keeps its fixed dark design */
+.dashboard-page.theme-light {
+  --page-solid: #f3f4fb;
+  --surface-1: rgba(255, 255, 255, 0.9);
+  --surface-2: rgba(226, 228, 245, 0.55);
+  --surface-solid: rgba(255, 255, 255, 0.85);
+  --surface-border: rgba(30, 34, 70, 0.12);
+  --overlay-bg: rgba(30, 34, 70, 0.35);
+  --modal-bg: rgba(255, 255, 255, 0.98);
+  --border: rgba(30, 34, 70, 0.12);
+  --text: #4b4f6b;
+  --text-h: #1a1b2e;
+  --text-muted: #6b6f8f;
+  --accent-bg: rgba(103, 118, 230, 0.1);
+  --accent-border: rgba(103, 118, 230, 0.4);
+  --danger: #e11d48;
+  --success: #059669;
+
+  background:
+    radial-gradient(circle at 15% 0%, rgba(139, 92, 246, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 85% 100%, rgba(34, 211, 238, 0.05) 0%, transparent 45%),
+    var(--page-solid);
+}
+
+.dashboard-page.theme-light .stat-card--periwinkle {
+  --stat-accent: #5b63d3;
+  --stat-accent-bg: rgba(91, 99, 211, 0.12);
+}
+
+.dashboard-page.theme-light .stat-card--violet {
+  --stat-accent: #7c3aed;
+  --stat-accent-bg: rgba(124, 58, 237, 0.12);
+}
+
+.dashboard-page.theme-light .stat-card--cyan {
+  --stat-accent: #0891b2;
+  --stat-accent-bg: rgba(8, 145, 178, 0.12);
+}
+
+.dashboard-page.theme-light .stat-card--success {
+  --stat-accent: #059669;
+  --stat-accent-bg: rgba(5, 150, 105, 0.12);
+}
+
+.dashboard-page.theme-light .stat-card--danger {
+  --stat-accent: #e11d48;
+  --stat-accent-bg: rgba(225, 29, 72, 0.12);
+}
+
+.dashboard-page.theme-light .badge-priority--low {
+  color: #059669;
+  background: rgba(5, 150, 105, 0.12);
+}
+
+.dashboard-page.theme-light .badge-priority--medium {
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.12);
+}
+
+.dashboard-page.theme-light .badge-priority--high {
+  color: #e11d48;
+  background: rgba(225, 29, 72, 0.12);
+}
+
+.dashboard-page.theme-light .badge-status--pending {
+  color: #5b63d3;
+  background: rgba(91, 99, 211, 0.12);
+}
+
+.dashboard-page.theme-light .badge-status--in-progress {
+  color: #0891b2;
+  background: rgba(8, 145, 178, 0.12);
+}
+
+.dashboard-page.theme-light .badge-status--completed {
+  color: #059669;
+  background: rgba(5, 150, 105, 0.12);
+}
+
+.dashboard-page.theme-light .logout-btn .spinner {
+  border-color: rgba(30, 34, 70, 0.2);
+  border-top-color: var(--text-h);
 }
