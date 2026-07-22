@@ -1,9 +1,28 @@
 .task-table-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   padding: 40px 20px;
   text-align: center;
   color: var(--text-muted);
   border: 1px dashed var(--surface-border);
   border-radius: 18px;
+}
+
+.inline-spinner {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid var(--surface-border);
+  border-top-color: #8b5cf6;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .task-table-wrap {

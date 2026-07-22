@@ -1,14 +1,24 @@
+import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
 import { ConfirmModal } from '../components/ConfirmModal'
+import { Pagination } from '../components/Pagination'
 import { TaskFilters, type SortOption } from '../components/TaskFilters'
 import { TaskFormModal } from '../components/TaskFormModal'
 import { TaskTable } from '../components/TaskTable'
 import { TaskViewModal } from '../components/TaskViewModal'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
+import { useToast } from '../hooks/useToast'
+import { filterAndSortTasks } from '../lib/taskFilters'
 import { createTask, deleteTask, fetchTasks, updateTask } from '../lib/tasksApi'
 import type { Task, TaskInput, TaskPriority, TaskStatus } from '../types/task'
 import './Dashboard.css'
+
+const PAGE_SIZE = 8
+
+function getErrorMessage(err: unknown, fallback: string) {
+  return axios.isAxiosError(err) ? (err.response?.data?.message ?? fallback) : fallback
+}
 
 type ModalState =
   | { mode: 'create' }
@@ -20,6 +30,7 @@ type ModalState =
 export function Dashboard() {
   const { user, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
+  const { showToast } = useToast()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [tasks, setTasks] = useState<Task[]>([])
   const [isLoadingTasks, setIsLoadingTasks] = useState(true)
@@ -28,6 +39,7 @@ export function Dashboard() {
   const [statusFilter, setStatusFilter] = useState<TaskStatus | 'All'>('All')
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | 'All'>('All')
   const [sort, setSort] = useState<SortOption>('newest')
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     loadTasks()
@@ -54,19 +66,26 @@ export function Dashboard() {
   async function handleCreate(input: TaskInput) {
     await createTask(input)
     setModal(null)
+    showToast('Task created successfully', 'success')
     await loadTasks()
   }
 
   async function handleUpdate(id: number, input: TaskInput) {
     await updateTask(id, input)
     setModal(null)
+    showToast('Task updated successfully', 'success')
     await loadTasks()
   }
 
   async function handleDelete(id: number) {
-    await deleteTask(id)
-    setModal(null)
-    await loadTasks()
+    try {
+      await deleteTask(id)
+      setModal(null)
+      showToast('Task deleted successfully', 'success')
+      await loadTasks()
+    } catch (err) {
+      showToast(getErrorMessage(err, 'Unable to delete task'), 'error')
+    }
   }
 
   const stats = useMemo(() => {
@@ -80,22 +99,21 @@ export function Dashboard() {
     }
   }, [tasks])
 
-  const visibleTasks = useMemo(() => {
-    const query = search.trim().toLowerCase()
+  const visibleTasks = useMemo(
+    () => filterAndSortTasks(tasks, { search, statusFilter, priorityFilter, sort }),
+    [tasks, search, statusFilter, priorityFilter, sort],
+  )
 
-    const filtered = tasks.filter((t) => {
-      if (query && !t.title.toLowerCase().includes(query)) return false
-      if (statusFilter !== 'All' && t.status !== statusFilter) return false
-      if (priorityFilter !== 'All' && t.priority !== priorityFilter) return false
-      return true
-    })
+  const filterKey = `${search}|${statusFilter}|${priorityFilter}|${sort}`
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey)
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey)
+    setCurrentPage(1)
+  }
 
-    return filtered.sort((a, b) => {
-      if (sort === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      if (sort === 'oldest') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      return a.dueDate.localeCompare(b.dueDate)
-    })
-  }, [tasks, search, statusFilter, priorityFilter, sort])
+  const totalPages = Math.max(1, Math.ceil(visibleTasks.length / PAGE_SIZE))
+  const safePage = Math.min(currentPage, totalPages)
+  const paginatedTasks = visibleTasks.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
   const initials = user?.name
     ?.split(' ')
@@ -287,19 +305,29 @@ export function Dashboard() {
           />
 
           {isLoadingTasks ? (
-            <p className="task-table-empty">Loading tasks…</p>
+            <p className="task-table-empty">
+              <span className="inline-spinner" aria-hidden="true" />
+              Loading tasks…
+            </p>
           ) : (
-            <TaskTable
-              tasks={visibleTasks}
-              emptyMessage={
-                tasks.length === 0
-                  ? 'No tasks yet. Create your first task to get started.'
-                  : 'No tasks match your search or filters.'
-              }
-              onView={(task) => setModal({ mode: 'view', task })}
-              onEdit={(task) => setModal({ mode: 'edit', task })}
-              onDelete={(task) => setModal({ mode: 'delete', task })}
-            />
+            <>
+              <TaskTable
+                tasks={paginatedTasks}
+                emptyMessage={
+                  tasks.length === 0
+                    ? 'No tasks yet. Create your first task to get started.'
+                    : 'No tasks match your search or filters.'
+                }
+                onView={(task) => setModal({ mode: 'view', task })}
+                onEdit={(task) => setModal({ mode: 'edit', task })}
+                onDelete={(task) => setModal({ mode: 'delete', task })}
+              />
+              <Pagination
+                currentPage={safePage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </>
           )}
         </section>
       </main>
