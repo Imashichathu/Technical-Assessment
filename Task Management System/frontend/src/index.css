@@ -25,6 +25,7 @@
   --accent-bg: rgba(103, 118, 230, 0.14);
   --accent-border: rgba(103, 118, 230, 0.5);
   --danger: #ff6b81;
+  --success: #34d399;
   --shadow: 0 25px 80px -20px rgba(4, 10, 46, 0.85);
 
   --sans: 'Segoe UI', system-ui, Roboto, sans-serif;
