@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type MouseEvent } from 'react'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { Pagination } from '../components/Pagination'
 import { TaskFilters, type SortOption } from '../components/TaskFilters'
@@ -18,6 +18,25 @@ const PAGE_SIZE = 8
 
 function getErrorMessage(err: unknown, fallback: string) {
   return axios.isAxiosError(err) ? (err.response?.data?.message ?? fallback) : fallback
+}
+
+const MAX_TILT_DEG = 10
+
+function handleCardTilt(e: MouseEvent<HTMLDivElement>) {
+  const card = e.currentTarget
+  const rect = card.getBoundingClientRect()
+  const px = (e.clientX - rect.left) / rect.width
+  const py = (e.clientY - rect.top) / rect.height
+  const rotateY = (px - 0.5) * MAX_TILT_DEG * 2
+  const rotateX = (0.5 - py) * MAX_TILT_DEG * 2
+
+  card.style.transform = `perspective(700px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px) scale(1.03)`
+  card.style.setProperty('--glare-x', `${px * 100}%`)
+  card.style.setProperty('--glare-y', `${py * 100}%`)
+}
+
+function handleCardTiltReset(e: MouseEvent<HTMLDivElement>) {
+  e.currentTarget.style.transform = ''
 }
 
 type ModalState =
@@ -269,6 +288,8 @@ export function Dashboard() {
               key={card.key}
               className={`stat-card stat-card--${card.accent}`}
               style={{ animationDelay: `${i * 0.06}s` }}
+              onMouseMove={handleCardTilt}
+              onMouseLeave={handleCardTiltReset}
             >
               <span className="stat-icon">{card.icon}</span>
               <span className="stat-value">{isLoadingTasks ? '–' : card.value}</span>
