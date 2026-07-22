@@ -18,7 +18,15 @@ const EMPTY_INPUT: TaskInput = {
   dueDate: '',
 }
 
+type FieldErrors = Partial<Record<keyof TaskInput, string>>
+
+function getToday() {
+  return new Date().toISOString().slice(0, 10)
+}
+
 export function TaskFormModal({ task, onClose, onSubmit }: TaskFormModalProps) {
+  const isEditing = Boolean(task)
+
   const [form, setForm] = useState<TaskInput>(
     task
       ? {
@@ -30,16 +38,51 @@ export function TaskFormModal({ task, onClose, onSubmit }: TaskFormModalProps) {
         }
       : EMPTY_INPUT,
   )
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   function update<K extends keyof TaskInput>(key: K, value: TaskInput[K]) {
     setForm((f) => ({ ...f, [key]: value }))
+    setFieldErrors((f) => ({ ...f, [key]: undefined }))
+  }
+
+  function validate(): FieldErrors {
+    const errors: FieldErrors = {}
+
+    if (!form.title.trim()) {
+      errors.title = 'Title is required'
+    } else if (form.title.length > 200) {
+      errors.title = 'Title must be 200 characters or fewer'
+    }
+
+    if (!form.priority) {
+      errors.priority = 'Priority is required'
+    }
+
+    if (!form.status) {
+      errors.status = 'Status is required'
+    }
+
+    if (!form.dueDate) {
+      errors.dueDate = 'Due date is required'
+    } else if (!isEditing && form.dueDate < getToday()) {
+      errors.dueDate = 'Due date cannot be earlier than today'
+    }
+
+    return errors
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError('')
+
+    const errors = validate()
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      return
+    }
+
     setIsSubmitting(true)
     try {
       await onSubmit(form)
@@ -63,8 +106,9 @@ export function TaskFormModal({ task, onClose, onSubmit }: TaskFormModalProps) {
             value={form.title}
             onChange={(e) => update('title', e.target.value)}
             maxLength={200}
-            required
+            aria-invalid={Boolean(fieldErrors.title)}
           />
+          {fieldErrors.title && <span className="field-error">{fieldErrors.title}</span>}
         </label>
 
         <label className="task-form-field">
@@ -79,20 +123,30 @@ export function TaskFormModal({ task, onClose, onSubmit }: TaskFormModalProps) {
         <div className="task-form-row">
           <label className="task-form-field">
             <span>Priority</span>
-            <select value={form.priority} onChange={(e) => update('priority', e.target.value as TaskInput['priority'])}>
+            <select
+              value={form.priority}
+              onChange={(e) => update('priority', e.target.value as TaskInput['priority'])}
+              aria-invalid={Boolean(fieldErrors.priority)}
+            >
               <option value="Low">Low</option>
               <option value="Medium">Medium</option>
               <option value="High">High</option>
             </select>
+            {fieldErrors.priority && <span className="field-error">{fieldErrors.priority}</span>}
           </label>
 
           <label className="task-form-field">
             <span>Status</span>
-            <select value={form.status} onChange={(e) => update('status', e.target.value as TaskInput['status'])}>
+            <select
+              value={form.status}
+              onChange={(e) => update('status', e.target.value as TaskInput['status'])}
+              aria-invalid={Boolean(fieldErrors.status)}
+            >
               <option value="Pending">Pending</option>
               <option value="In Progress">In Progress</option>
               <option value="Completed">Completed</option>
             </select>
+            {fieldErrors.status && <span className="field-error">{fieldErrors.status}</span>}
           </label>
         </div>
 
@@ -102,8 +156,10 @@ export function TaskFormModal({ task, onClose, onSubmit }: TaskFormModalProps) {
             type="date"
             value={form.dueDate}
             onChange={(e) => update('dueDate', e.target.value)}
-            required
+            min={isEditing ? undefined : getToday()}
+            aria-invalid={Boolean(fieldErrors.dueDate)}
           />
+          {fieldErrors.dueDate && <span className="field-error">{fieldErrors.dueDate}</span>}
         </label>
 
         {error && <p className="task-form-error">{error}</p>}
