@@ -1,3 +1,4 @@
+import { isTaskOverdue } from '../lib/taskFilters'
 import type { Task } from '../types/task'
 import './TaskTable.css'
 
@@ -7,12 +8,6 @@ interface TaskTableProps {
   onView: (task: Task) => void
   onEdit: (task: Task) => void
   onDelete: (task: Task) => void
-}
-
-function isOverdue(task: Task) {
-  if (task.status === 'Completed') return false
-  const today = new Date().toISOString().slice(0, 10)
-  return task.dueDate < today
 }
 
 export function TaskTable({
@@ -52,7 +47,9 @@ export function TaskTable({
                   {task.status}
                 </span>
               </td>
-              <td className={isOverdue(task) ? 'task-table-overdue' : undefined}>{task.dueDate}</td>
+              <td className={isTaskOverdue(task) ? 'task-table-overdue' : undefined}>
+                {task.dueDate}
+              </td>
               <td className="task-table-actions">
                 <button type="button" aria-label="View task" onClick={() => onView(task)}>
                   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
