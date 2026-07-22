@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ConfirmModal } from '../components/ConfirmModal'
+import { TaskFilters, type SortOption } from '../components/TaskFilters'
 import { TaskFormModal } from '../components/TaskFormModal'
 import { TaskTable } from '../components/TaskTable'
 import { TaskViewModal } from '../components/TaskViewModal'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
 import { createTask, deleteTask, fetchTasks, updateTask } from '../lib/tasksApi'
-import type { Task, TaskInput } from '../types/task'
+import type { Task, TaskInput, TaskPriority, TaskStatus } from '../types/task'
 import './Dashboard.css'
 
 type ModalState =
@@ -23,6 +24,10 @@ export function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [isLoadingTasks, setIsLoadingTasks] = useState(true)
   const [modal, setModal] = useState<ModalState>(null)
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState<TaskStatus | 'All'>('All')
+  const [priorityFilter, setPriorityFilter] = useState<TaskPriority | 'All'>('All')
+  const [sort, setSort] = useState<SortOption>('newest')
 
   useEffect(() => {
     loadTasks()
@@ -74,6 +79,23 @@ export function Dashboard() {
       overdue: tasks.filter((t) => t.status !== 'Completed' && t.dueDate < today).length,
     }
   }, [tasks])
+
+  const visibleTasks = useMemo(() => {
+    const query = search.trim().toLowerCase()
+
+    const filtered = tasks.filter((t) => {
+      if (query && !t.title.toLowerCase().includes(query)) return false
+      if (statusFilter !== 'All' && t.status !== statusFilter) return false
+      if (priorityFilter !== 'All' && t.priority !== priorityFilter) return false
+      return true
+    })
+
+    return filtered.sort((a, b) => {
+      if (sort === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      if (sort === 'oldest') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      return a.dueDate.localeCompare(b.dueDate)
+    })
+  }, [tasks, search, statusFilter, priorityFilter, sort])
 
   const initials = user?.name
     ?.split(' ')
@@ -253,11 +275,27 @@ export function Dashboard() {
             </button>
           </div>
 
+          <TaskFilters
+            search={search}
+            onSearchChange={setSearch}
+            status={statusFilter}
+            onStatusChange={setStatusFilter}
+            priority={priorityFilter}
+            onPriorityChange={setPriorityFilter}
+            sort={sort}
+            onSortChange={setSort}
+          />
+
           {isLoadingTasks ? (
             <p className="task-table-empty">Loading tasks…</p>
           ) : (
             <TaskTable
-              tasks={tasks}
+              tasks={visibleTasks}
+              emptyMessage={
+                tasks.length === 0
+                  ? 'No tasks yet. Create your first task to get started.'
+                  : 'No tasks match your search or filters.'
+              }
               onView={(task) => setModal({ mode: 'view', task })}
               onEdit={(task) => setModal({ mode: 'edit', task })}
               onDelete={(task) => setModal({ mode: 'delete', task })}

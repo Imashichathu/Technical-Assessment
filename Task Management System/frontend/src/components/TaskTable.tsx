@@ -3,6 +3,7 @@ import './TaskTable.css'
 
 interface TaskTableProps {
   tasks: Task[]
+  emptyMessage?: string
   onView: (task: Task) => void
   onEdit: (task: Task) => void
   onDelete: (task: Task) => void
@@ -14,9 +15,15 @@ function isOverdue(task: Task) {
   return task.dueDate < today
 }
 
-export function TaskTable({ tasks, onView, onEdit, onDelete }: TaskTableProps) {
+export function TaskTable({
+  tasks,
+  emptyMessage = 'No tasks yet. Create your first task to get started.',
+  onView,
+  onEdit,
+  onDelete,
+}: TaskTableProps) {
   if (tasks.length === 0) {
-    return <p className="task-table-empty">No tasks yet. Create your first task to get started.</p>
+    return <p className="task-table-empty">{emptyMessage}</p>
   }
 
   return (
