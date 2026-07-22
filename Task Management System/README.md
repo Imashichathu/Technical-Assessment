@@ -1,75 +1,64 @@
-# React + TypeScript + Vite
+# Task Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack Task Management System. **Phase 1** implements user authentication (login/logout) with JWT.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Frontend:** React + TypeScript + Vite, `react-router-dom`, `axios`
+- **Backend:** Node.js + Express, JWT auth, `bcryptjs` for password hashing
+- **Database:** MySQL (`mysql2`)
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Project structure
 
 ```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+Task Management System/
+├── frontend/       # React + Vite app
+├── backend/        # Express API
+└── database/       # SQL schema reference
 ```
+
+## Default login
+
+No registration is required. Use:
+
+| Email             | Password |
+| ----------------- | -------- |
+| admin@test.com    | 123456   |
+
+The backend automatically creates the `users` table and seeds this admin account (bcrypt-hashed) the first time it starts.
+
+## Running locally
+
+### 1. Database
+
+Make sure a local MySQL server is running. The backend will create the `task_management_system` database and `users` table automatically — no manual SQL import is required (see `database/schema.sql` for reference).
+
+### 2. Backend
+
+```bash
+cd backend
+npm install
+npm run dev       # http://localhost:5000
+```
+
+Configure `backend/.env` (copy from `backend/.env.example`) with your MySQL credentials, a `JWT_SECRET`, and `CLIENT_ORIGIN` (defaults to `http://localhost:5173`).
+
+### 3. Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:5173
+```
+
+Configure `frontend/.env` (copy from `frontend/.env.example`) with `VITE_API_URL` pointing at the backend.
+
+## Auth API
+
+| Method | Route             | Auth | Description                    |
+| ------ | ----------------- | ---- | ------------------------------ |
+| POST   | `/api/auth/login`  | No   | Returns a JWT + user profile   |
+| GET    | `/api/auth/me`     | Yes  | Returns the current user       |
+| POST   | `/api/auth/logout` | Yes  | Stateless logout acknowledgement |
+
+The frontend stores the JWT in `localStorage` and attaches it as a `Bearer` token on every request.
